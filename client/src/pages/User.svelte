@@ -7,7 +7,9 @@
     let errors = {};
     let form = {};
     let message = "";
-    let data = {role: "User",name: "",surname:"",address:"",phone:"",email:"",password:""};
+
+    // In javascript/Typescript, you do not need to define the JSON fields, it will return undefined if you do not define it.
+    let data = {role: "User"/*,name: "",surname:"",address:"",phone:"",email:"",password:""*/};
     onMount(() => (form = document.querySelector("form#main")));
     
     function error(map, name) {
@@ -197,4 +199,3 @@
           Create Account
         </button>
     </form>
-    

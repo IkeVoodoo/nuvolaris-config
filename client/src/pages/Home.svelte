@@ -3,9 +3,15 @@
     import { onMount } from "svelte";
     import { token } from "../state";
     import { loggedId } from "../state";
+    import Input from "../Input.svelte"
     
     import validate from "validate.js";
     import Inhome from "./Inhome.svelte"
+
+    var fields = [
+        {type: "email", id: "email", placeholder: "Email", bound: "email"},
+        {type: "password", id: "password", placeholder: "Password", bound: "password"},
+    ]
     
 
     // Hook up the form so we can prevent it from being posted
@@ -75,6 +81,7 @@
     import { loggedUser } from "../state";
 
 </script>
+
 
 <div class="p-3">
     <div class="card shadow-xl image-full">
@@ -150,3 +157,20 @@
         </div>
     </div>
 </div>
+
+{#if $token == ""}
+<div class="shadow-2xl rounded bg-gray-100 grid place-items-center" style="margin-left: 30vw; margin-top: 25vh; width: 40vw; height: 50vh;">
+    <div class="flex justify-center">
+      <div class="text-gray-900 placeholder-gray-400 absolute">
+          {#each fields as {type, id, placeholder, bound}}
+            <Input {type} {id} {placeholder} bind:value={data[bound]}/>
+          {/each}
+      </div>
+    </div>
+    <div class="flex flex-col justify-between">
+      <button class="w-32 sm:w-64 text-base font-medium rounded-3xl p-3 bg-sky-500 text-white flex justify-center" id="confirm" on:click|preventDefault={submit}>Confirm</button>
+    </div>
+  </div>
+{:else}
+  <Inhome />
+{/if}

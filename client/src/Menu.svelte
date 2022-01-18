@@ -25,7 +25,7 @@
                     <!-- Website Logo -->
                     <a href="/" class="flex items-center py-4 px-2">
                         <img
-                            src="/logonuvolaris.jpeg"
+                            src="/logonuvolaris.png"
                             alt="Logo"
                             class="h-8 w-auto mr-2"
                         />
