@@ -5006,7 +5006,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (128:0) {:else}
+    // (150:0) {:else}
     function create_else_block(ctx) {
     	let inhome;
     	let current;
@@ -5039,14 +5039,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(128:0) {:else}",
+    		source: "(150:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (115:0) {#if $token == ""}
+    // (137:0) {#if $token == ""}
     function create_if_block(ctx) {
     	let div3;
     	let div1;
@@ -5084,20 +5084,20 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "Confirm";
     			attr_dev(div0, "class", "text-gray-900 placeholder-gray-400 absolute w-56");
-    			add_location(div0, file, 117, 6, 4178);
+    			add_location(div0, file, 139, 6, 4808);
     			attr_dev(div1, "class", "flex justify-center");
-    			add_location(div1, file, 116, 4, 4137);
+    			add_location(div1, file, 138, 4, 4767);
     			attr_dev(button, "class", "w-32 sm:w-64 text-base font-medium rounded-3xl p-3 bg-sky-500 text-white flex justify-center");
     			attr_dev(button, "id", "confirm");
-    			add_location(button, file, 124, 6, 4475);
+    			add_location(button, file, 146, 6, 5105);
     			attr_dev(div2, "class", "flex flex-col justify-between");
-    			add_location(div2, file, 123, 4, 4424);
+    			add_location(div2, file, 145, 4, 5054);
     			attr_dev(div3, "class", "shadow-2xl rounded bg-gray-100 grid place-items-center");
     			set_style(div3, "margin-left", "30vw");
     			set_style(div3, "margin-top", "25vh");
     			set_style(div3, "width", "40vw");
     			set_style(div3, "height", "50vh");
-    			add_location(div3, file, 115, 0, 3991);
+    			add_location(div3, file, 137, 0, 4621);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div3, anchor);
@@ -5177,14 +5177,14 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(115:0) {#if $token == \\\"\\\"}",
+    		source: "(137:0) {#if $token == \\\"\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (119:10) {#each fields as {type, id, placeholder, bound}}
+    // (141:10) {#each fields as {type, id, placeholder, bound}}
     function create_each_block(ctx) {
     	let input;
     	let updating_value;
@@ -5245,7 +5245,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(119:10) {#each fields as {type, id, placeholder, bound}}",
+    		source: "(141:10) {#each fields as {type, id, placeholder, bound}}",
     		ctx
     	});
 
@@ -5386,27 +5386,26 @@ var app = (function () {
     			// Email is required
     			presence: true,
     			// and must be an email (duh)
-    			email: true
+    			valid: true
     		},
     		password: {
     			// Password is also required
     			presence: true,
     			// And must be at least 5 characters long
-    			length: {
-    				minimum: 5,
-    				message: "Troppo corta almeno 5 caratteri"
-    			}
+    			length: { checkMinimum: true, minimum: 5 }
     		}
     	};
 
     	async function submit() {
+    		// Loop over every field and check if it has an error
+    		// TODO: Improve this
     		for (let i = 0; i < fields.length; i++) {
     			let field = fields[i];
     			let input = document.getElementById(field.id);
     			let error = document.getElementById(field.id + "_error");
 
     			if (field.type == 'email') {
-    				if (input.validity.typeMismatch || input.value.length == 0) {
+    				if (constraints.email.valid && input.validity.typeMismatch || constraints.email.presence && input.value.length == 0) {
     					input.classList.add("ring-red-500");
     					error.classList.remove('h-0');
     					error.classList.add('h-auto');
@@ -5416,12 +5415,17 @@ var app = (function () {
     					error.classList.add('h-0');
     					error.classList.remove('h-auto');
     				}
-    			} else if (field.type == 'password') {
-    				if (input.value.length == 0) {
+    			}
+
+    			if (field.type == 'password') {
+    				// This is a very long if statement, but it's the only way I could think of to check if the password is valid
+    				if (input.value.length < (constraints.password.length.checkMinimum
+    				? constraints.password.length.minimum
+    				: -1) || constraints.password.presence && input.value.length == 0) {
     					input.classList.add("ring-red-500");
     					error.classList.remove('h-0');
     					error.classList.add('h-auto');
-    					error.innerHTML = "Required";
+    					error.innerHTML = input.value.length == 0 ? "Required" : "Invalid";
     				} else {
     					input.classList.remove("ring-red-500");
     					error.classList.add('h-0');
@@ -5444,11 +5448,13 @@ var app = (function () {
     		}
     	}
 
+    	// Clear the login token and the currently logged in user
     	function logout() {
     		token.set("");
     		loggedId.set("");
     	}
 
+    	// Default data
     	let data = {
     		"username": "info@sciabarra.com",
     		"password": "openmed"

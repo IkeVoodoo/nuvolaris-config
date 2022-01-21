@@ -38,30 +38,42 @@
         }
         return "";
     }
+
+
     var constraints = {
         email: {
+
             // Email is required
             presence: true,
+
             // and must be an email (duh)
-            email: true,
+            valid: true,
         },
         password: {
+
             // Password is also required
             presence: true,
+
             // And must be at least 5 characters long
             length: {
-                minimum: 5,
-                message: "Troppo corta almeno 5 caratteri",
-            },
+                checkMinimum: true,
+                minimum: 5
+            }
         },
     };
+
+    
     async function submit() {
+
+        // Loop over every field and check if it has an error
+        // TODO: Improve this
         for(let i = 0; i < fields.length; i++){
             let field = fields[i];
             let input = document.getElementById(field.id);
             let error = document.getElementById(field.id + "_error")
             if(field.type == 'email') {
-                if(input.validity.typeMismatch || input.value.length == 0) {
+                if((constraints.email.valid && input.validity.typeMismatch)
+                    || (constraints.email.presence && input.value.length == 0)) {
                     input.classList.add("ring-red-500");
                     error.classList.remove('h-0')
                     error.classList.add('h-auto')
@@ -71,12 +83,16 @@
                     error.classList.add('h-0')
                     error.classList.remove('h-auto')
                 }
-            } else if(field.type == 'password') {
-                if(input.value.length == 0) {
+            }
+            if(field.type == 'password') {
+                // This is a very long if statement, but it's the only way I could think of to check if the password is valid
+                if((input.value.length < (constraints.password.length.checkMinimum
+                        ? constraints.password.length.minimum : -1))
+                    || (constraints.password.presence && input.value.length == 0)) {
                     input.classList.add("ring-red-500");
                     error.classList.remove('h-0')
                     error.classList.add('h-auto')
-                    error.innerHTML = "Required"
+                    error.innerHTML = input.value.length == 0 ? "Required" : "Invalid"
                 } else {
                     input.classList.remove("ring-red-500");
                     error.classList.add('h-0')
@@ -98,14 +114,20 @@
             }
         }
     }
+
+    // Clear the login token and the currently logged in user
     function logout() {
         token.set("")
         loggedId.set("")
     }
+
+    // Default data
     let data = {
         "username": "info@sciabarra.com",
         "password": "openmed"
     };
+
+
     import { loggedUser } from "../state";
 
 </script>
